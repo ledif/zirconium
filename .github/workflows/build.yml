@@ -63,7 +63,7 @@ jobs:
 
       - name: Rechunk Image
         run: |
-          RPMINFO=$(podman run --rm -v ./.github:/app bash /app/generate-rpm-json.sh)
+          RPMINFO=$(podman run --rm -v ./.github:/app --entrypoint bash "localhost/${IMAGE_NAME}:${DEFAULT_TAG}" /app/generate-rpm-json.sh)
           echo -e "====\n$RPMINFO\n===="
           sudo podman run --rm --privileged -v /var/lib/containers:/var/lib/containers --entrypoint rpm-ostree "localhost/${IMAGE_NAME}:${DEFAULT_TAG}" experimental compose build-chunked-oci --max-layers 80 --bootc --format-version=1 "--label=dev.hhd.rechunk.info=$RPMINFO" "--from=localhost/${IMAGE_NAME}:${DEFAULT_TAG}" "--output=containers-storage:localhost/${IMAGE_NAME}:${DEFAULT_TAG}"
 
